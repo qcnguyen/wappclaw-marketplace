@@ -1,0 +1,56 @@
+{
+  "name": "az",
+  "description": "Azure — manage resources with the Azure CLI, and Azure DevOps (projects, repos, pipelines, boards) through its azure-devops extension, signed in as a service principal.",
+  "keywords": ["azure", "azure-devops", "pipelines", "boards", "arm"],
+  "version": "1.3.0",
+  "guideline": "GUIDELINE.md",
+  "install": {
+    "runtime": "bash",
+    "script": "install.sh",
+    "timeoutMs": 1200000
+  },
+  "auth": {
+    "runtime": "bash",
+    "script": "auth.sh",
+    "statusScript": "auth-status.sh"
+  },
+  "run": {
+    "runtime": "bash",
+    "script": "run.sh",
+    "timeoutMs": 600000
+  },
+  "settings": [
+    {
+      "key": "AZ_CLIENT_ID",
+      "label": "Service principal client ID",
+      "required": true,
+      "description": "Application (client) ID of the Entra app registration to sign in as. Public information — it is on the app registration's overview blade, and safe to read back here."
+    },
+    {
+      "key": "AZ_TENANT_ID",
+      "label": "Entra tenant ID",
+      "required": true,
+      "description": "The directory (tenant) GUID the service principal lives in. A service principal sign-in is always tenant-specific, so `common` does not work here — use the GUID."
+    },
+    {
+      "key": "AZ_SUBSCRIPTION",
+      "label": "Default subscription",
+      "default": "",
+      "description": "Subscription id or name to select after signing in, so commands need no `--subscription`. Leave empty to use whichever the service principal gets by default — which is fine when it can see only one."
+    },
+    {
+      "key": "AZ_DEVOPS_ORG",
+      "label": "Azure DevOps organisation URL",
+      "default": "",
+      "description": "Full URL, e.g. `https://dev.azure.com/contoso`. Set as the `az devops` default so commands need no `--organization`. Leave empty if this plugin is only for Azure resources. Note the service principal must be added to the organisation as a user for any `az devops` command to work — existing in the tenant is not enough."
+    }
+  ],
+  "secrets": [
+    {
+      "key": "AZ_CLIENT_SECRET",
+      "label": "Service principal secret",
+      "required": true,
+      "description": "The client secret of that app registration — Certificates & secrets -> New client secret. Write-only: encrypted at rest and never read back. Client secrets expire, so if commands suddenly fail to authenticate, check the expiry date before anything else."
+    }
+  ]
+}

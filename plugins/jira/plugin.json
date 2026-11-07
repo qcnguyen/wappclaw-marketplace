@@ -1,0 +1,44 @@
+{
+  "name": "jira",
+  "description": "Jira Cloud — read, search, create, comment on and transition issues through the Jira REST API v3 with curl.",
+  "keywords": ["jira", "issues", "tickets", "bugs", "jql", "atlassian"],
+  "version": "2.1.0",
+  "guideline": "GUIDELINE.md",
+  "install": {
+    "runtime": "bash",
+    "script": "install.sh",
+    "timeoutMs": 300000
+  },
+  "auth": {
+    "runtime": "bash",
+    "script": "auth.sh",
+    "statusScript": "auth-status.sh"
+  },
+  "run": {
+    "runtime": "bash",
+    "script": "run.sh",
+    "timeoutMs": 180000
+  },
+  "settings": [
+    {
+      "key": "JIRA_SITE",
+      "label": "Jira site",
+      "required": true,
+      "description": "The Atlassian site host, without a scheme — e.g. `mycompany.atlassian.net`. The site's cloud id is looked up from it automatically, so there is nothing else to configure."
+    },
+    {
+      "key": "JIRA_EMAIL",
+      "label": "Account email",
+      "required": true,
+      "description": "Email of the Atlassian account the API token belongs to. Jira's Basic auth is `email:token`, and everything the agent does happens as this account — its permissions are the plugin's permissions."
+    }
+  ],
+  "secrets": [
+    {
+      "key": "JIRA_API_TOKEN",
+      "label": "API token",
+      "required": true,
+      "description": "An Atlassian API token from id.atlassian.com/manage-profile/security/api-tokens. Either kind works here: this plugin calls Jira through the api.atlassian.com gateway, which accepts scoped and unscoped (classic) tokens alike. Tokens can carry an expiry date — if calls start failing with 401, check that first."
+    }
+  ]
+}

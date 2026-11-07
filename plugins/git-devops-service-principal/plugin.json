@@ -1,0 +1,62 @@
+{
+  "name": "git-devops-service-principal",
+  "description": "Azure DevOps credentials for git — run ordinary git commands (clone, fetch, pull, push) against Azure DevOps repositories, authenticated as an Entra service principal.",
+  "keywords": ["git", "azure-repos", "clone", "push", "pull-request"],
+  "version": "1.8.0",
+  "guideline": "GUIDELINE.md",
+  "install": {
+    "runtime": "bash",
+    "script": "install.sh",
+    "timeoutMs": 300000
+  },
+  "auth": {
+    "runtime": "bash",
+    "script": "auth.sh",
+    "statusScript": "auth-status.sh"
+  },
+  "run": {
+    "runtime": "bash",
+    "script": "run.sh",
+    "timeoutMs": 900000
+  },
+  "settings": [
+    {
+      "key": "AZDO_CLIENT_ID",
+      "label": "Service principal client ID",
+      "required": true,
+      "description": "Application (client) ID of the Entra app registration / service principal that Azure DevOps is accessed as. Public information — it is the id you see on the app registration's overview blade, and it is safe to read back here. The matching secret goes in the credential field below, not here."
+    },
+    {
+      "key": "AZDO_TENANT_ID",
+      "label": "Entra tenant ID",
+      "required": true,
+      "description": "The directory (tenant) GUID the service principal lives in. A client-credentials sign-in is always tenant-specific, so `common` and `organizations` do NOT work here — use the GUID."
+    },
+    {
+      "key": "AZDO_ORGANIZATION",
+      "label": "Azure DevOps organisation",
+      "required": true,
+      "description": "The organisation to talk to: a bare name (`contoso`), a modern URL (`https://dev.azure.com/contoso`) or a legacy one (`https://contoso.visualstudio.com`) are all accepted. Used for the sign-in check, and to know which hosts to attach the credential to. A git command carries its own full URL, so both URL styles keep working whichever form is set here."
+    },
+    {
+      "key": "AZDO_COMMIT_NAME",
+      "label": "Commit author name",
+      "default": "",
+      "description": "Name recorded as the author and committer of commits made through this plugin. Leave empty to inherit the server user's own git identity. Set only for this plugin: it is injected per command and nothing is written to the machine's git configuration."
+    },
+    {
+      "key": "AZDO_COMMIT_EMAIL",
+      "label": "Commit author email",
+      "default": "",
+      "description": "Email recorded alongside the name above. Azure DevOps matches a commit to a person by this address, so an address the organisation does not know still commits fine but shows as an unlinked author. Note this wins over a per-repository identity in that clone's own .git/config, because it is injected at the highest precedence git has — which is the point of setting it here, but worth knowing if a checkout has its own identity."
+    }
+  ],
+  "secrets": [
+    {
+      "key": "AZDO_CLIENT_SECRET",
+      "label": "Service principal secret (password)",
+      "required": true,
+      "description": "The client secret / password of that app registration — Certificates & secrets -> New client secret. Write-only: it is encrypted at rest and never read back by any API. Client secrets expire, so if git suddenly reports an authentication failure, check the expiry date before anything else."
+    }
+  ]
+}

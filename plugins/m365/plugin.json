@@ -1,0 +1,66 @@
+{
+  "name": "m365",
+  "description": "Microsoft 365 — read and manage SharePoint, Teams, Entra ID and Outlook through the CLI for Microsoft 365.",
+  "keywords": ["sharepoint", "teams", "entra", "outlook", "onedrive", "m365"],
+  "version": "2.4.0",
+  "guideline": "GUIDELINE.md",
+  "install": {
+    "runtime": "bash",
+    "script": "install.sh",
+    "timeoutMs": 900000
+  },
+  "auth": {
+    "runtime": "bash",
+    "script": "auth.sh",
+    "statusScript": "auth-status.sh"
+  },
+  "run": {
+    "runtime": "bash",
+    "script": "run.sh",
+    "timeoutMs": 300000
+  },
+  "settings": [
+    {
+      "key": "CLIMICROSOFT365_AUTHTYPE",
+      "label": "Sign-in mode",
+      "default": "deviceCode",
+      "description": "How this plugin signs in. Exactly one mode is in force: Authenticate signs out first and then uses this one, and the plugin counts as signed in only while the stored connection matches what is set here — change it and the plugin reads as signed out until you authenticate again. Each mode needs different fields below; the ones the other mode uses are ignored.",
+      "options": [
+        {
+          "value": "deviceCode",
+          "label": "Device code (sign in as a person)",
+          "description": "A human completes the login in a browser and the server acts as that account, with that account's permissions. Needs an app registration with 'Allow public client flows' enabled and delegated permissions. The sign-in expires with its refresh token, so it has to be repeated eventually."
+        },
+        {
+          "value": "certificate",
+          "label": "Certificate (sign in as the application)",
+          "description": "App-only: no user is involved, so nothing expires until the certificate does and nobody has to be present. The app registration needs APPLICATION permissions with admin consent — delegated ones do nothing here — and commands that mean 'the signed-in user' (a personal mailbox, a OneDrive, 'me') have no account to resolve."
+        }
+      ]
+    },
+    {
+      "key": "CLIMICROSOFT365_ENTRAAPPID",
+      "label": "Entra app (client) ID",
+      "required": true,
+      "description": "The application (client) ID of the Entra app registration this server signs in with. Needed by both sign-in modes. CLI for Microsoft 365 v10+ has no shared default app, so sign-in cannot proceed without one. Create it once with `m365 setup` on a workstation, or in the Azure portal, and paste the id here."
+    },
+    {
+      "key": "CLIMICROSOFT365_TENANT",
+      "label": "Tenant",
+      "default": "common",
+      "description": "Tenant to authenticate against. `common` works only for a MULTI-tenant app registration signing in by device code; a single-tenant one needs your tenant's GUID here, or sign-in fails with AADSTS7000014 (\"device_code is not valid\") and never shows a code at all. Certificate sign-in is always tenant-specific and REFUSES `common` outright. If in doubt, use the GUID."
+    }
+  ],
+  "secrets": [
+    {
+      "key": "CLIMICROSOFT365_CERTIFICATE_BASE64",
+      "label": "Certificate, base64-encoded (certificate mode)",
+      "description": "The .pfx or .pem holding the certificate and its private key, base64-encoded: `base64 -w0 cert.pfx`. The only way it is supplied, deliberately — a path to a file on the server would be a second channel saying the same thing, and it would need shell access on this box to be any use, which pasting does not. Write-only: encrypted at rest and never read back. Not marked required, because it is only needed in certificate mode; the sign-in says so plainly if it is missing."
+    },
+    {
+      "key": "CLIMICROSOFT365_CERTIFICATE_PASSWORD",
+      "label": "Certificate password (certificate mode)",
+      "description": "The password protecting the private key, if it has one — a .pfx exported from Windows normally does. Leave empty for an unprotected key. It is never passed on a command line: the sign-in opens the certificate with it locally and hands the CLI an already-opened copy, which is why openssl is a requirement for a protected certificate."
+    }
+  ]
+}

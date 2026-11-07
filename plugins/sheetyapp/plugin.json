@@ -1,0 +1,48 @@
+{
+  "name": "sheetyapp",
+  "description": "SheetyApp — read and change workbooks (sheets, columns, rows, queries, apps and widgets, row-actions, procedures, timing actions, webhooks, fields, API templates, q-functions) and validate Q-Expressions through the shp CLI.",
+  "keywords": ["sheetyapp", "workbook", "spreadsheet", "q-expression", "shp"],
+  "version": "1.4.0",
+  "guideline": "GUIDELINE.md",
+  "install": {
+    "runtime": "bash",
+    "script": "install.sh",
+    "timeoutMs": 300000
+  },
+  "auth": {
+    "runtime": "bash",
+    "script": "auth.sh",
+    "statusScript": "auth-status.sh"
+  },
+  "run": {
+    "runtime": "bash",
+    "script": "run.sh",
+    "timeoutMs": 300000
+  },
+  "settings": [
+    {
+      "key": "SHEETYAPP_API_URL",
+      "label": "API URL",
+      "default": "https://api.sheetyapp.com",
+      "description": "The SheetyApp API the CLI talks to. Change it only for a non-production environment. It is applied at sign-in: after changing it the plugin reads as signed out until you Authenticate again, so commands never run against one environment with a login from another."
+    },
+    {
+      "key": "SHEETYAPP_IDP_URL",
+      "label": "Identity provider URL",
+      "default": "https://idp.sheetyapp.com",
+      "description": "The SheetyApp identity provider used for the device-code sign-in. Must belong to the same environment as the API URL."
+    },
+    {
+      "key": "SHEETYAPP_WEB_URL",
+      "label": "Web app URL",
+      "default": "https://go.sheetyapp.com",
+      "description": "Base URL of the SheetyApp web app. Not used by the CLI — the agent builds page links for users from it, and reads it as $SHEETYAPP_WEB_URL."
+    },
+    {
+      "key": "SHP_DOWNLOAD_URL",
+      "label": "CLI download URL",
+      "default": "https://cdn.sheetyapp.com/cli",
+      "description": "Where install.sh downloads the shp binary from: <this URL>/<platform>/shp, e.g. linux-x64. Change it only to install a CLI build from somewhere else."
+    }
+  ]
+}

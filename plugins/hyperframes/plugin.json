@@ -1,0 +1,72 @@
+{
+  "name": "hyperframes",
+  "description": "HyperFrames — write videos as HTML and render them to MP4: scaffold, lint/check, snapshot frames, edit the timeline, add catalog blocks, make media, and render locally or on HeyGen's cloud through the hyperframes CLI.",
+  "keywords": ["video", "mp4", "animation", "render", "heygen"],
+  "version": "1.0.0",
+  "guideline": "GUIDELINE.md",
+  "install": {
+    "runtime": "bash",
+    "script": "install.sh",
+    "timeoutMs": 1200000
+  },
+  "auth": {
+    "runtime": "bash",
+    "script": "auth.sh",
+    "statusScript": "auth-status.sh"
+  },
+  "run": {
+    "runtime": "bash",
+    "script": "run.sh",
+    "timeoutMs": 900000
+  },
+  "settings": [
+    {
+      "key": "HYPERFRAMES_VERSION",
+      "label": "CLI version",
+      "default": "latest",
+      "description": "The npm version of the hyperframes CLI that Install puts in place, e.g. `latest` or `0.8.226`. Pin it when renders have to stay reproducible across reinstalls; press Reinstall after changing it."
+    },
+    {
+      "key": "HEYGEN_AUTH_MODE",
+      "label": "HeyGen sign-in mode",
+      "default": "local",
+      "description": "Signing in is OPTIONAL. Local authoring and rendering need no account; HeyGen sign-in only unlocks cloud rendering, the music catalog, asset search, HeyGen voices, avatars and generated media. Exactly one mode is in force: Authenticate signs out first and then uses this one, and the plugin counts as signed in only for the mode set here (always, in local mode).",
+      "options": [
+        {
+          "value": "local",
+          "label": "Local only (no HeyGen account)",
+          "description": "Author and render on this server only. Nothing to sign in to, so the plugin always reads as authenticated; Authenticate just drops any stored HeyGen session. Cloud rendering and HeyGen media are unavailable."
+        },
+        {
+          "value": "device",
+          "label": "Device code (sign in as a person)",
+          "description": "Authenticate prints a HeyGen URL and code; a person approves it in a browser and the server acts as that HeyGen account, on its plan and credits. The session refreshes itself until it is revoked."
+        },
+        {
+          "value": "apiKey",
+          "label": "API key",
+          "description": "Uses the HeyGen API key below. Nobody has to be present, and usage is billed to that key's API credits rather than a HyperFrames plan."
+        }
+      ]
+    },
+    {
+      "key": "HYPERFRAMES_TELEMETRY",
+      "label": "Usage telemetry",
+      "default": "on",
+      "description": "Whether the CLI sends its anonymous usage counters to HyperFrames (linked to the HeyGen account once signed in).",
+      "options": [
+        { "value": "on", "label": "On", "description": "The CLI's default." },
+        { "value": "off", "label": "Off", "description": "Sets HYPERFRAMES_NO_TELEMETRY=1 for every command." }
+      ]
+    }
+  ],
+  "secrets": [
+    {
+      "key": "HEYGEN_API_KEY",
+      "label": "HeyGen API key",
+      "required": true,
+      "showWhen": { "HEYGEN_AUTH_MODE": "apiKey" },
+      "description": "From HeyGen → Settings → API. Read by the CLI from the environment, so it never appears on a command line. Ignored in device-code mode."
+    }
+  ]
+}

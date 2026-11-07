@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/qcnguyen/wappclaw-marketplace/schema/marketplace.schema.json",
+  "title": "Wappclaw marketplace index (marketplace.json), format 1",
+  "description": "Mirrors MarketplaceIndex / MarketplaceIndexItem in the platform's packages/protocol/src/marketplace.ts. Unknown keys are allowed everywhere so a newer format still reads on an older server.",
+  "type": "object",
+  "required": [
+    "formatVersion",
+    "items"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "formatVersion": {
+      "const": 1
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "publisher": {
+      "$ref": "#/$defs/person"
+    },
+    "homepage": {
+      "type": "string"
+    },
+    "categories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "$defs": {
+    "person": {
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "source": {
+      "description": "A folder in this repository ('' or '.' = the root). A marketplace is self-contained: there is no way to point at another repository.",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "required": [
+            "path"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "type",
+        "source"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{0,39}$",
+          "description": "plugin today; mini-app, interactive-form, form-component, skill, sub-agent, mcp-server, command, pipeline reserved. Any other value is listed as unsupported, not refused."
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "id": {
+          "type": "string",
+          "description": "The id it installs under. Defaults to what the item's own manifest says."
+        },
+        "name": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string",
+          "description": "One line for the card."
+        },
+        "description": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string",
+          "description": "Used only when the item's own manifest carries none."
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "icon": {
+          "type": "string",
+          "description": "An image path in this repository, or an https URL."
+        },
+        "publisher": {
+          "$ref": "#/$defs/person"
+        },
+        "homepage": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "requires": {
+          "type": "object",
+          "properties": {
+            "wappclaw": {
+              "type": "string",
+              "description": "A semver range, e.g. >=0.1.30. Displayed, not enforced yet."
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": {
+          "type": "string",
+          "description": "Why not to install it any more. Still listed, flagged."
+        }
+      }
+    }
+  }
+}

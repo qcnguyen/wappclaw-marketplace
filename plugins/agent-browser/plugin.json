@@ -1,0 +1,64 @@
+{
+  "name": "agent-browser",
+  "description": "agent-browser — drive a real headless Chrome: open pages, snapshot the accessibility tree with @eN refs, click, fill and submit forms, read and extract content, take screenshots and PDFs, record video, and test web apps through the agent-browser CLI.",
+  "keywords": ["browser", "web-scraping", "screenshot", "web-testing", "chrome"],
+  "version": "1.0.0",
+  "guideline": "GUIDELINE.md",
+  "install": {
+    "runtime": "bash",
+    "script": "install.sh",
+    "timeoutMs": 1200000
+  },
+  "run": {
+    "runtime": "bash",
+    "script": "run.sh",
+    "timeoutMs": 600000
+  },
+  "settings": [
+    {
+      "key": "AGENT_BROWSER_VERSION",
+      "label": "CLI version",
+      "default": "latest",
+      "description": "The npm version of agent-browser that Install puts in place, e.g. `latest` or `0.41.0`. Each CLI version pins its own Chrome build. Press Reinstall after changing it."
+    },
+    {
+      "key": "CHROME_SANDBOX",
+      "label": "Chrome sandbox",
+      "default": "auto",
+      "description": "Chrome's own process sandbox. Many servers cannot provide it (containers, VMs, Ubuntu 23.10+ with AppArmor restricting user namespaces) and Chrome then refuses to start.",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto (decided at install)",
+          "description": "Install launches Chrome once with the sandbox and once without, and runs without it only if the sandboxed launch fails. Press Reinstall after the host changes."
+        },
+        {
+          "value": "on",
+          "label": "Always on",
+          "description": "Never pass --no-sandbox. Chrome will not start on a host that cannot sandbox it."
+        },
+        {
+          "value": "off",
+          "label": "Always off",
+          "description": "Always launch Chrome with --no-sandbox."
+        }
+      ]
+    },
+    {
+      "key": "AGENT_BROWSER_ALLOWED_DOMAINS",
+      "label": "Allowed domains",
+      "default": "",
+      "description": "Optional. Comma-separated domain patterns (e.g. `example.com,*.example.com`) the browser may reach; navigation and page traffic anywhere else is blocked. Empty means any site. While set, saved-state restore, Chrome profiles and CDP attach are refused."
+    },
+    {
+      "key": "PAGE_CONTENT_BOUNDARIES",
+      "label": "Mark page content",
+      "default": "on",
+      "description": "Wrap text that comes from web pages in boundary markers, so the agent can tell page content (which may contain injected instructions) from the tool's own output.",
+      "options": [
+        { "value": "on", "label": "On", "description": "Sets AGENT_BROWSER_CONTENT_BOUNDARIES for every command." },
+        { "value": "off", "label": "Off", "description": "Page text is printed unmarked." }
+      ]
+    }
+  ]
+}

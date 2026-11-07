@@ -1,0 +1,144 @@
+{
+  "name": "invoke-sqlcmd",
+  "description": "SQL Server / Azure SQL — run PowerShell Invoke-Sqlcmd commands, signed in with a stored Entra ID (Azure AD) credential or SQL login. Only commands beginning with Invoke-Sqlcmd are accepted.",
+  "keywords": ["sql-server", "azure-sql", "sql-query", "database"],
+  "version": "1.1.0",
+  "guideline": "GUIDELINE.md",
+  "install": {
+    "runtime": "bash",
+    "script": "install.sh",
+    "timeoutMs": 900000
+  },
+  "auth": {
+    "runtime": "bash",
+    "script": "auth.sh",
+    "statusScript": "auth-status.sh"
+  },
+  "run": {
+    "runtime": "bash",
+    "script": "run.sh",
+    "timeoutMs": 600000
+  },
+  "settings": [
+    {
+      "key": "SQL_AUTH_MODE",
+      "label": "Sign-in mode",
+      "default": "servicePrincipal",
+      "description": "Which stored credential this plugin signs in with. Only the fields the chosen mode uses are shown below.",
+      "options": [
+        {
+          "value": "servicePrincipal",
+          "label": "Entra service principal (client secret)",
+          "description": "An app registration's client ID + secret. Needs the tenant ID, client ID and client secret. The principal must exist as a user in the database (CREATE USER [app-name] FROM EXTERNAL PROVIDER)."
+        },
+        {
+          "value": "password",
+          "label": "Entra user (username + password)",
+          "description": "An Entra ID account without MFA, e.g. a dedicated service account. Needs the tenant ID, username and password. Accounts with MFA or conditional access cannot sign in this way."
+        },
+        {
+          "value": "managedIdentity",
+          "label": "Managed identity (this machine)",
+          "description": "The Azure VM / App Service identity the server runs under. No secret is stored. For a user-assigned identity, put its client ID in 'Client ID'."
+        },
+        {
+          "value": "sqlLogin",
+          "label": "SQL login (username + password)",
+          "description": "Classic SQL Server authentication, not Entra ID. Needs the username and password."
+        }
+      ]
+    },
+    {
+      "key": "SQL_INJECT_AUTH",
+      "label": "Apply the credential",
+      "default": "auto",
+      "description": "Whether the stored credential is applied to every Invoke-Sqlcmd automatically, or only when a command references it ($SqlAccessToken / $SqlCredential).",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Automatically",
+          "description": "Every Invoke-Sqlcmd is signed in with the stored credential unless the command passes its own (-AccessToken, -Credential, -Username/-Password or -ConnectionString)."
+        },
+        {
+          "value": "explicit",
+          "label": "Only when the command references it",
+          "description": "Nothing is injected. A command uses the stored credential by writing -AccessToken $SqlAccessToken or -Credential $SqlCredential, exactly as an ordinary script would."
+        }
+      ]
+    },
+    {
+      "key": "SQL_TENANT_ID",
+      "label": "Entra tenant ID",
+      "default": "",
+      "required": true,
+      "showWhen": {
+        "SQL_AUTH_MODE": [
+          "servicePrincipal",
+          "password"
+        ]
+      },
+      "description": "Directory (tenant) GUID or verified domain (contoso.onmicrosoft.com). 'common' does not work for a service principal."
+    },
+    {
+      "key": "SQL_CLIENT_ID",
+      "label": "Client ID",
+      "default": "",
+      "showWhen": {
+        "SQL_AUTH_MODE": [
+          "servicePrincipal",
+          "password",
+          "managedIdentity"
+        ]
+      },
+      "description": "Service principal mode: the app registration's Application (client) ID. Managed identity mode: a user-assigned identity's client ID (leave empty for system-assigned). Entra user mode: optional public client app to sign in through; empty uses the Azure CLI's well-known public client."
+    },
+    {
+      "key": "SQL_USERNAME",
+      "label": "Username",
+      "default": "",
+      "required": true,
+      "showWhen": {
+        "SQL_AUTH_MODE": [
+          "password",
+          "sqlLogin"
+        ]
+      },
+      "description": "Entra user mode: the UPN (svc-sql@contoso.com). SQL login mode: the login name. The password goes in the credential field below."
+    },
+    {
+      "key": "SQL_SERVER",
+      "label": "Default server",
+      "default": "",
+      "description": "Used as -ServerInstance when a command does not name one, e.g. myserver.database.windows.net. Also what Authenticate connects to in order to prove the credential works. Optional."
+    },
+    {
+      "key": "SQL_DATABASE",
+      "label": "Default database",
+      "default": "",
+      "description": "Used as -Database when a command does not name one. Optional; without it the login's default database (master on Azure SQL) is used."
+    }
+  ],
+  "secrets": [
+    {
+      "key": "SQL_CLIENT_SECRET",
+      "label": "Service principal client secret",
+      "required": true,
+      "showWhen": {
+        "SQL_AUTH_MODE": "servicePrincipal"
+      },
+      "description": "The secret's *Value* (shown once in Azure), not its Secret ID. Write-only; encrypted at rest. Client secrets expire — check that first if sign-in suddenly fails."
+    },
+    {
+      "key": "SQL_PASSWORD",
+      "label": "Password",
+      "required": true,
+      "showWhen": {
+        "SQL_AUTH_MODE": [
+          "password",
+          "sqlLogin"
+        ]
+      },
+      "description": "The password for 'Username'. Write-only; encrypted at rest."
+    }
+  ]
+}

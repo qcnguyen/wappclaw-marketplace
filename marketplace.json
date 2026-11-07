@@ -1,0 +1,188 @@
+{
+  "$schema": "./schema/marketplace.schema.json",
+  "formatVersion": 1,
+  "name": "Wappclaw Marketplace",
+  "description": "Plugins and, soon, mini-apps, interactive forms and more for Wappclaw.",
+  "publisher": {
+    "name": "Wappclaw",
+    "url": "https://github.com/qcnguyen"
+  },
+  "homepage": "https://github.com/qcnguyen/wappclaw-marketplace",
+  "categories": [
+    {
+      "id": "microsoft",
+      "label": "Microsoft"
+    },
+    {
+      "id": "devops",
+      "label": "DevOps"
+    },
+    {
+      "id": "cloud",
+      "label": "Cloud"
+    },
+    {
+      "id": "source-control",
+      "label": "Source control"
+    },
+    {
+      "id": "data",
+      "label": "Data"
+    },
+    {
+      "id": "productivity",
+      "label": "Productivity"
+    },
+    {
+      "id": "atlassian",
+      "label": "Atlassian"
+    },
+    {
+      "id": "project-management",
+      "label": "Project management"
+    },
+    {
+      "id": "web",
+      "label": "Web"
+    },
+    {
+      "id": "automation",
+      "label": "Automation"
+    },
+    {
+      "id": "media",
+      "label": "Media"
+    }
+  ],
+  "items": [
+    {
+      "type": "plugin",
+      "id": "agent-browser",
+      "name": "Agent Browser",
+      "summary": "Drive a real headless Chrome: open pages, read them, click, fill and screenshot.",
+      "categories": [
+        "web",
+        "automation"
+      ],
+      "source": "plugins/agent-browser",
+      "publisher": {
+        "name": "Wappclaw",
+        "url": "https://github.com/qcnguyen"
+      },
+      "homepage": "https://github.com/qcnguyen/wappclaw-marketplace/tree/main/plugins/agent-browser"
+    },
+    {
+      "type": "plugin",
+      "id": "az",
+      "name": "Azure CLI",
+      "summary": "Manage Azure resources and Azure DevOps projects, repos, pipelines and boards.",
+      "categories": [
+        "microsoft",
+        "devops",
+        "cloud"
+      ],
+      "source": "plugins/az",
+      "publisher": {
+        "name": "Wappclaw",
+        "url": "https://github.com/qcnguyen"
+      },
+      "homepage": "https://github.com/qcnguyen/wappclaw-marketplace/tree/main/plugins/az"
+    },
+    {
+      "type": "plugin",
+      "id": "git-devops-service-principal",
+      "name": "Azure DevOps git",
+      "summary": "Clone, pull and push Azure DevOps repositories as an Entra service principal.",
+      "categories": [
+        "microsoft",
+        "devops",
+        "source-control"
+      ],
+      "source": "plugins/git-devops-service-principal",
+      "publisher": {
+        "name": "Wappclaw",
+        "url": "https://github.com/qcnguyen"
+      },
+      "homepage": "https://github.com/qcnguyen/wappclaw-marketplace/tree/main/plugins/git-devops-service-principal"
+    },
+    {
+      "type": "plugin",
+      "id": "hyperframes",
+      "name": "HyperFrames",
+      "summary": "Write videos as HTML and render them to MP4.",
+      "categories": [
+        "media"
+      ],
+      "source": "plugins/hyperframes",
+      "publisher": {
+        "name": "Wappclaw",
+        "url": "https://github.com/qcnguyen"
+      },
+      "homepage": "https://github.com/qcnguyen/wappclaw-marketplace/tree/main/plugins/hyperframes"
+    },
+    {
+      "type": "plugin",
+      "id": "invoke-sqlcmd",
+      "name": "SQL Server",
+      "summary": "Run Invoke-Sqlcmd against SQL Server and Azure SQL with a stored credential.",
+      "categories": [
+        "microsoft",
+        "data"
+      ],
+      "source": "plugins/invoke-sqlcmd",
+      "publisher": {
+        "name": "Wappclaw",
+        "url": "https://github.com/qcnguyen"
+      },
+      "homepage": "https://github.com/qcnguyen/wappclaw-marketplace/tree/main/plugins/invoke-sqlcmd"
+    },
+    {
+      "type": "plugin",
+      "id": "jira",
+      "name": "Jira Cloud",
+      "summary": "Search, create, comment on and transition Jira issues.",
+      "categories": [
+        "atlassian",
+        "project-management"
+      ],
+      "source": "plugins/jira",
+      "publisher": {
+        "name": "Wappclaw",
+        "url": "https://github.com/qcnguyen"
+      },
+      "homepage": "https://github.com/qcnguyen/wappclaw-marketplace/tree/main/plugins/jira"
+    },
+    {
+      "type": "plugin",
+      "id": "m365",
+      "name": "Microsoft 365",
+      "summary": "SharePoint, Teams, Entra ID and Outlook through the CLI for Microsoft 365.",
+      "categories": [
+        "microsoft",
+        "productivity"
+      ],
+      "source": "plugins/m365",
+      "publisher": {
+        "name": "Wappclaw",
+        "url": "https://github.com/qcnguyen"
+      },
+      "homepage": "https://github.com/qcnguyen/wappclaw-marketplace/tree/main/plugins/m365"
+    },
+    {
+      "type": "plugin",
+      "id": "sheetyapp",
+      "name": "SheetyApp",
+      "summary": "Read and change SheetyApp workbooks with the shp CLI.",
+      "categories": [
+        "data",
+        "productivity"
+      ],
+      "source": "plugins/sheetyapp",
+      "publisher": {
+        "name": "Wappclaw",
+        "url": "https://github.com/qcnguyen"
+      },
+      "homepage": "https://github.com/qcnguyen/wappclaw-marketplace/tree/main/plugins/sheetyapp"
+    }
+  ]
+}
