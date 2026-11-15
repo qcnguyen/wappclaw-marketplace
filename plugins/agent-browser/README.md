@@ -15,7 +15,7 @@ This file is for administrators. The agent reads [GUIDELINE.md](GUIDELINE.md).
 
    | Needs | Uses, in order |
    |---|---|
-   | `agent-browser` | the npm tarball for **CLI version**, fetched from registry.npmjs.org with curl and checked against its published SHA-1, unpacked into `state/agent-browser` (only this platform's native binary is kept) and linked into `state/bin` |
+   | `agent-browser` | the npm tarball for **CLI version**, fetched from registry.npmjs.org with curl and checked against its published SHA-1, unpacked into `state/agent-browser` (only this platform's native binary is kept; from 0.43 that binary comes from its own `@agent-browser/cli-<platform>` package, fetched and checked the same way) and linked into `state/bin` |
    | Chrome | `agent-browser install` — the Chrome for Testing build that CLI version pins (~400 MB), into the plugin's home; older builds are removed |
    | Chrome's shared libraries | already present, else the distro packages (root or password-less `sudo` only) |
    | Chrome sandbox | with **Chrome sandbox** = Auto, Chrome is launched once with its sandbox and, only if that fails, once with `--no-sandbox`; the result is remembered until the next Reinstall |

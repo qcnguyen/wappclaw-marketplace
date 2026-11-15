@@ -107,21 +107,57 @@ else
   echo "Downloading agent-browser $resolved..."
   tmp="$state/.agent-browser-download"
   rm -rf "$tmp" && mkdir -p "$tmp"
-  if download "$tarball" "$tmp/package.tgz" && [ "$(sha1_of "$tmp/package.tgz")" = "$shasum" ] &&
-    tar -xzf "$tmp/package.tgz" -C "$tmp" && [ -f "$tmp/package/bin/agent-browser-$platform" ]; then
+  # Download, verify and unpack one tarball into a fresh directory, saying which
+  # step failed. Sets $fail_reason on failure.
+  fail_reason=""
+  unpack() { # url sha1 dir
+    mkdir -p "$3"
+    download "$1" "$3.tgz" || { fail_reason="downloading $1 failed"; return 1; }
+    local got; got="$(sha1_of "$3.tgz")"
+    [ "$got" = "$2" ] || { fail_reason="checksum of $1 is $got, expected $2"; return 1; }
+    tar -xzf "$3.tgz" -C "$3" || { fail_reason="unpacking $1 failed"; return 1; }
+  }
+  ok=0
+  if unpack "$tarball" "$shasum" "$tmp/main"; then
+    bindir="$tmp/main/package/bin"
+    if [ -f "$bindir/agent-browser-$platform" ]; then
+      ok=1 # <= 0.42: every platform's binary is inside the main package
+    else
+      # >= 0.43: each binary is its own package (@agent-browser/cli-<target>),
+      # an optionalDependency of the main one. Put it where the bundled one was.
+      case "$platform" in
+        linux-x64 | linux-arm64) native="cli-${platform}-gnu" ;;
+        linux-musl-*) native="cli-linux-${platform#linux-musl-}-musl" ;;
+        *) native="cli-$platform" ;;
+      esac
+      nmeta="$(fetch "$registry/@agent-browser/$native/$resolved")" || nmeta=""
+      ntarball="$(printf '%s' "$nmeta" | sed -n 's/.*"tarball":"\([^"]*\)".*/\1/p')"
+      nshasum="$(printf '%s' "$nmeta" | sed -n 's/.*"shasum":"\([0-9a-f]\{40\}\)".*/\1/p')"
+      if [ -z "$ntarball" ] || [ -z "$nshasum" ]; then
+        fail_reason="agent-browser $resolved has no bundled $platform binary and @agent-browser/$native@$resolved could not be resolved"
+      elif unpack "$ntarball" "$nshasum" "$tmp/native"; then
+        if [ -f "$tmp/native/package/bin/agent-browser" ]; then
+          mv "$tmp/native/package/bin/agent-browser" "$bindir/agent-browser-$platform" && ok=1
+        else
+          fail_reason="@agent-browser/$native@$resolved contains no bin/agent-browser"
+        fi
+      fi
+    fi
+  fi
+  if [ "$ok" -eq 1 ]; then
     # Keep only this platform's binary; the others are ~100 MB of dead weight.
-    find "$tmp/package/bin" -name 'agent-browser-*' ! -name "agent-browser-$platform" -delete
-    chmod +x "$tmp/package/bin/agent-browser-$platform"
+    find "$bindir" -name 'agent-browser-*' ! -name "agent-browser-$platform" -delete
+    chmod +x "$bindir/agent-browser-$platform"
     rm -rf "$pkg"
-    mv "$tmp/package" "$pkg"
+    mv "$tmp/main/package" "$pkg"
     rm -rf "$tmp"
     echo "Installed agent-browser $resolved to $pkg."
   else
     rm -rf "$tmp"
     if have_binary; then
-      echo "Downloading or verifying agent-browser $resolved failed; keeping the installed $(installed_version)." >&2
+      echo "Installing agent-browser $resolved failed ($fail_reason); keeping the installed $(installed_version)." >&2
     else
-      echo "Downloading or verifying $tarball failed, and nothing is installed." >&2
+      echo "Installing agent-browser $resolved failed: $fail_reason. Nothing is installed." >&2
       exit 1
     fi
   fi

@@ -2,7 +2,7 @@
   "name": "agent-browser",
   "description": "agent-browser — drive a real headless Chrome: open pages, snapshot the accessibility tree with @eN refs, click, fill and submit forms, read and extract content, take screenshots and PDFs, record video, and test web apps through the agent-browser CLI.",
   "keywords": ["browser", "web-scraping", "screenshot", "web-testing", "chrome"],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "guideline": "GUIDELINE.md",
   "install": {
     "runtime": "bash",
